@@ -9,119 +9,55 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: ProductPage(),
+      home: FullScreenImages(),
     );
   }
 }
 
-class ProductPage extends StatefulWidget {
-  @override
-  _ProductPageState createState() => _ProductPageState();
-}
-
-class _ProductPageState extends State<ProductPage> {
-  int selectedSize = 37;
-  List<int> sizes = [35, 36, 37, 38, 40];
+class FullScreenImages extends StatelessWidget {
+  final String imageUrl1 =
+      'https://images.unsplash.com/photo-1735317461815-1a0ba64e9a56?q=80&w=2127&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+  final String imageUrl2 =
+      'https://plus.unsplash.com/premium_photo-1717529138029-5b049119cfb1?q=80&w=1994&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+  final String imageUrl3 =
+      'https://images.unsplash.com/photo-1735276680702-c008c8035c18?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
+  final String imageUrl4 =
+      'https://images.unsplash.com/photo-1735424080768-8730f9c8a0e9?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Product Details"),
-        backgroundColor: Colors.orangeAccent,
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
-            Center(
-              child: Image.network(
-                'https://i.postimg.cc/ZR15K3KM/pngimg-com-watches-PNG9854.png',
-                width: 150,
-                height: 150,
-                fit: BoxFit.cover,
-              ),
-            ),
-            SizedBox(height: 16),
-            Text(
-              "Apple Watch Series 6",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Row(
-              children: List.generate(
-                  5, (index) => Icon(Icons.star, color: Colors.orange)),
-            ),
-            SizedBox(height: 8),
-            Text(
-              "5 45,000",
-              style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.green),
-            ),
-            SizedBox(height: 8),
-            Text(
-              "The upgraded S6 SIP runs up to 20% faster, allowing apps to load 20% faster while maintaining an 18-hour battery life.",
-              style: TextStyle(fontSize: 16),
-            ),
-            SizedBox(height: 16),
-            Text(
-              "Select Size",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 8),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: sizes.map((size) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedSize = size;
-                    });
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: selectedSize == size
-                          ? Colors.orangeAccent
-                          : Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      size.toString(),
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            Spacer(),
-            SizedBox(
+      body: Column(
+        children: [
+          Expanded(
+            child: Image.network(
+              imageUrl1,
+              fit: BoxFit.cover,
               width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Added to Cart!")),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.all(15),
-                  backgroundColor: Colors.orangeAccent,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-                child: Text(
-                  "Add to Cart",
-                  style: TextStyle(fontSize: 18),
-                ),
-              ),
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: Image.network(
+              imageUrl2,
+              fit: BoxFit.cover,
+              width: double.infinity,
+            ),
+          ),
+          Expanded(
+            child: Image.network(
+              imageUrl3,
+              fit: BoxFit.cover,
+              width: double.infinity,
+            ),
+          ),
+          Expanded(
+            child: Image.network(
+              imageUrl4,
+              fit: BoxFit.cover,
+              width: double.infinity,
+            ),
+          ),
+        ],
       ),
     );
   }
