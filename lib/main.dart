@@ -5,17 +5,48 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // Track the theme mode (light or dark)
+  bool _isDarkMode = false;
+
+  // Toggle theme mode between light and dark
+  void _toggleTheme() {
+    setState(() {
+      _isDarkMode = !_isDarkMode;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: FullScreenImages(),
+      themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primarySwatch: Colors.blue,
+        appBarTheme: AppBarTheme(backgroundColor: Colors.blue),
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primarySwatch: Colors.blue,
+        appBarTheme: AppBarTheme(backgroundColor: Colors.black),
+      ),
+      home: FullScreenImages(
+          toggleTheme: _toggleTheme), // Pass toggle function to child
     );
   }
 }
 
 class FullScreenImages extends StatefulWidget {
+  final VoidCallback toggleTheme; // Function passed from MyApp
+
+  FullScreenImages({required this.toggleTheme});
+
   @override
   _FullScreenImagesState createState() => _FullScreenImagesState();
 }
@@ -41,7 +72,15 @@ class _FullScreenImagesState extends State<FullScreenImages> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Image LAB')),
+      appBar: AppBar(
+        title: Text('Image LAB'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.brightness_6),
+            onPressed: widget.toggleTheme, // Toggle theme on button press
+          ),
+        ],
+      ),
       drawer: Drawer(
         elevation: 16,
         child: ListView(
@@ -60,7 +99,7 @@ class _FullScreenImagesState extends State<FullScreenImages> {
                   CircleAvatar(
                     radius: 40,
                     backgroundImage: NetworkImage(
-                      'https://www.w3schools.com/w3images/avatar2.png',
+                      'https://media.licdn.com/dms/image/v2/D5622AQF07VTpzRkwDw/feedshare-shrink_800/feedshare-shrink_800/0/1724013922794?e=2147483647&v=beta&t=LAIcNj4iFnTtUrnGFEuMfxFaPOgho5Hq3Sg68NUoDXg',
                     ),
                   ),
                   SizedBox(height: 10),
