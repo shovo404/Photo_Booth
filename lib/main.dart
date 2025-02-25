@@ -56,7 +56,7 @@ class _ProductPageState extends State<ProductPage> {
             ),
             SizedBox(height: 8),
             Text(
-              "₦ 45,000",
+              "5 45,000",
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
