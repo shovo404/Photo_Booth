@@ -43,7 +43,9 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-  String _selectedCategory = "nature";  // Default category
+  String _selectedCategory = "nature"; // Default category
+  bool _isLoggedIn = false;
+  String _username = '';
 
   void _onItemTapped(int index) {
     setState(() {
@@ -57,8 +59,26 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  void _onLoginSuccess(String username) {
+    setState(() {
+      _isLoggedIn = true;
+      _username = username;
+    });
+  }
+
+  void _logout() {
+    setState(() {
+      _isLoggedIn = false;
+      _username = '';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!_isLoggedIn) {
+      return LoginPage(onLoginSuccess: _onLoginSuccess);
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Image LAB'),
@@ -66,6 +86,10 @@ class _MainScreenState extends State<MainScreen> {
           IconButton(
             icon: Icon(Icons.brightness_6),
             onPressed: widget.toggleTheme,
+          ),
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: _logout, // Logout button
           ),
         ],
       ),
@@ -85,7 +109,7 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Welcome, Shovo',
+                    'Welcome, $_username',
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ],
@@ -97,14 +121,12 @@ class _MainScreenState extends State<MainScreen> {
           ],
         ),
       ),
-      body: _selectedIndex == 0
-          ? WelcomePage()
-          : FullScreenImagesPage(category: _selectedCategory),
+      body: FullScreenImagesPage(category: _selectedCategory),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.image), label: 'Images'),
           BottomNavigationBarItem(icon: Icon(Icons.image), label: 'Images'),
         ],
       ),
@@ -122,13 +144,77 @@ class _MainScreenState extends State<MainScreen> {
   }
 }
 
-class WelcomePage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  final Function(String) onLoginSuccess;
+
+  LoginPage({required this.onLoginSuccess});
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  void _login() {
+    if (_formKey.currentState!.validate()) {
+      String username = _usernameController.text;
+      String password = _passwordController.text;
+
+      // Hardcoded authentication with default username and password as "123"
+      if (username == "shovo" && password == "123") {
+        widget.onLoginSuccess(username);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Invalid username or password')),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        'Developed by Shovo',
-        style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _usernameController,
+                decoration: InputDecoration(labelText: 'Username'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your username';
+                  }
+                  return null;
+                },
+              ),
+              TextFormField(
+                controller: _passwordController,
+                decoration: InputDecoration(labelText: 'Password'),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter your password';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _login,
+                child: Text('Login'),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -166,7 +252,7 @@ class _FullScreenImagesPageState extends State<FullScreenImagesPage> {
       // Fetch the image results and shuffle them for randomness
       List<String> fetchedImageUrls = List<String>.from(
           data["results"].map((image) => image["urls"]["regular"]));
-      fetchedImageUrls.shuffle();  // Shuffle the list to randomize the images
+      fetchedImageUrls.shuffle(); // Shuffle the list to randomize the images
 
       setState(() {
         imageUrls = fetchedImageUrls;
