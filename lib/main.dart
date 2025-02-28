@@ -42,16 +42,9 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
   String _selectedCategory = "nature"; // Default category
   bool _isLoggedIn = false;
   String _username = '';
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   void _onCategorySelected(String category) {
     setState(() {
@@ -81,16 +74,10 @@ class _MainScreenState extends State<MainScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Image LAB'),
+        title: Text('Pic View'),
         actions: [
-          IconButton(
-            icon: Icon(Icons.brightness_6),
-            onPressed: widget.toggleTheme,
-          ),
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: _logout, // Logout button
-          ),
+          IconButton(icon: Icon(Icons.brightness_6), onPressed: widget.toggleTheme),
+          IconButton(icon: Icon(Icons.logout), onPressed: _logout),
         ],
       ),
       drawer: Drawer(
@@ -122,13 +109,22 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
       body: FullScreenImagesPage(category: _selectedCategory),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.image), label: 'Images'),
-          BottomNavigationBarItem(icon: Icon(Icons.image), label: 'Images'),
-        ],
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        notchMargin: 8.0,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            IconButton(
+              icon: Icon(Icons.image, size: 30),
+              onPressed: () {
+                setState(() {
+                  _selectedCategory = "nature"; // Default category when tapped
+                });
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -163,8 +159,8 @@ class _LoginPageState extends State<LoginPage> {
       String username = _usernameController.text;
       String password = _passwordController.text;
 
-      // Hardcoded authentication with default username and password as "123"
-      if (username == "shovo" && password == "123") {
+      // Hardcoded authentication
+      if (username == "1" && password == "1") {
         widget.onLoginSuccess(username);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -177,9 +173,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Login'),
-      ),
+      appBar: AppBar(title: Text('Login')),
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Form(
@@ -189,23 +183,13 @@ class _LoginPageState extends State<LoginPage> {
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(labelText: 'Username'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your username';
-                  }
-                  return null;
-                },
+                validator: (value) => value!.isEmpty ? 'Enter username' : null,
               ),
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(labelText: 'Password'),
                 obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your password';
-                  }
-                  return null;
-                },
+                validator: (value) => value!.isEmpty ? 'Enter password' : null,
               ),
               SizedBox(height: 20),
               ElevatedButton(
@@ -232,8 +216,7 @@ class FullScreenImagesPage extends StatefulWidget {
 
 class _FullScreenImagesPageState extends State<FullScreenImagesPage> {
   List<String> imageUrls = [];
-  final String unsplashApiKey =
-      "gpc1EnKt1pI5SEB6uOE2WNhMhhsGfW0fwI5NT9AuohA";
+  final String unsplashApiKey = "gpc1EnKt1pI5SEB6uOE2WNhMhhsGfW0fwI5NT9AuohA";
 
   @override
   void initState() {
@@ -243,16 +226,14 @@ class _FullScreenImagesPageState extends State<FullScreenImagesPage> {
 
   Future<void> _fetchImages(String query) async {
     final url = Uri.parse(
-        "https://api.unsplash.com/search/photos?query=$query&per_page=10&client_id=$unsplashApiKey");
+        "https://api.unsplash.com/search/photos?query=$query&per_page=20&client_id=$unsplashApiKey");
 
     final response = await http.get(url);
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
-
-      // Fetch the image results and shuffle them for randomness
       List<String> fetchedImageUrls = List<String>.from(
           data["results"].map((image) => image["urls"]["regular"]));
-      fetchedImageUrls.shuffle(); // Shuffle the list to randomize the images
+      fetchedImageUrls.shuffle();
 
       setState(() {
         imageUrls = fetchedImageUrls;
@@ -266,7 +247,7 @@ class _FullScreenImagesPageState extends State<FullScreenImagesPage> {
   void didUpdateWidget(FullScreenImagesPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.category != widget.category) {
-      _fetchImages(widget.category); // Fetch new images when the category changes
+      _fetchImages(widget.category);
     }
   }
 
@@ -303,7 +284,7 @@ class _FullScreenImagesPageState extends State<FullScreenImagesPage> {
   }
 }
 
-// Image Detail Page with Full-Screen View
+// Image Detail Screen
 class ImageDetailScreen extends StatelessWidget {
   final String imageUrl;
 
@@ -312,24 +293,9 @@ class ImageDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      backgroundColor: Colors.black,
+      appBar: AppBar(),
       body: Center(
-        child: InteractiveViewer(
-          panEnabled: false,
-          boundaryMargin: EdgeInsets.all(20),
-          minScale: 0.5,
-          maxScale: 2.5,
-          child: Image.network(imageUrl, fit: BoxFit.contain),
-        ),
+        child: Image.network(imageUrl),
       ),
     );
   }
