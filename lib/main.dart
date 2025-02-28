@@ -74,7 +74,7 @@ class _MainScreenState extends State<MainScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Pic View'),
+        title: Text('Image LAB'),
         actions: [
           IconButton(icon: Icon(Icons.brightness_6), onPressed: widget.toggleTheme),
           IconButton(icon: Icon(Icons.logout), onPressed: _logout),
@@ -160,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
       String password = _passwordController.text;
 
       // Hardcoded authentication
-      if (username == "1" && password == "1") {
+      if (username == "shovo" && password == "123") {
         widget.onLoginSuccess(username);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -226,7 +226,7 @@ class _FullScreenImagesPageState extends State<FullScreenImagesPage> {
 
   Future<void> _fetchImages(String query) async {
     final url = Uri.parse(
-        "https://api.unsplash.com/search/photos?query=$query&per_page=20&client_id=$unsplashApiKey");
+        "https://api.unsplash.com/search/photos?query=$query&per_page=30&client_id=$unsplashApiKey");
 
     final response = await http.get(url);
     if (response.statusCode == 200) {
